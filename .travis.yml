@@ -1,6 +1,25 @@
+
+sudo: required
 language: java
-script: mvn verify -B
-sudo: false
-notifications:
-  slack:
-    secure: aC4TRo2EiPb0LUA5L1+7JhLzmSFw8Uiqzr3ycDpMc+PMQLM9pOKxZ1OckJZIQBcCnmgcnTMuNXrcuZAY0GIwJ65hu8uRxJGjLROb0KsVCvuJnvBdAjE+MlPIHbegyRA9YLupdRUdpuHAtYmy/Fdub33SHZ9ZXYpiOfYVFfaUpSk=
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mvn clean cobertura:cobertura -Dtest=EnsureOakIndexJobHandlerTest#init -DfailIfNoTests=false
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/acs-aem-commons/target/site/cobertura
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "efT98Vbb45X2vDQEi7yDxC9pX8gOxbsPA2R1+4hVKSub1fL5HDiav5F408oKLxPXeWjJO9ksiVO0M2SARiFisTj4qh1T4a9Jt3x4AjQvURLHLNN6w7QERKiPPU37bzLzsUnc3kOMAlVQhuxINdfC2xcIxsXp5W9FERrPW1E5V03cdj/XiCTFrDivueYFnjSiAA9OPJh3tOrdSE5yVWVQ8djZTWDg/7woj8SWZXHXOoVL5Zwm5YjBYdZ2djT8ynXFYE1A1RC8rFAvS5lcv920lYYZYGONpYiG7jfTB9ER/pi2SRaW2aXAR0NZxHsYM8PZg/IQlPccrsZskqbcA5rgY/fcMIWkjJO7WO/kVBP8sqauXE+MwJGp3m+iJofWcrUFhOkRhTvXHXdNsXC2rwLZmyppaBjZwnnmAIhPSE2n2Ahf99mySTlp7BGjt8h9lZzEW8lrU78lks7kGDq6FvX3miiPeVCWeYBcGtE37vnHmehmDzm4YwH/6fEeJYnVt4OUiw/ihHDtmKGevB2KmGeyZ9guPVwTx6eBIz7fl/9ejQz+Ip6zBgX55nKQZhfryLYBClnUbSUPd12ZBBgNfwo7RUzy+qx7bePZbiC5D+3zS/plP8bHtim7u8HNxJdsCFtkOlBJczbulYgxcHULxFEEjRVQlWqJgEKCsZt1CezCQpc="
+
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
